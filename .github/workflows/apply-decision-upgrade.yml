@@ -1,0 +1,36 @@
+name: Apply decision upgrade
+on:
+  push:
+    branches: ['chatgpt/decision-intelligence-v2']
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message, '[decision-upgrade-applied]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chatgpt/decision-intelligence-v2
+          fetch-depth: 0
+      - name: Aplicar bundle quando disponível
+        shell: bash
+        run: |
+          if [ ! -f scripts/decision_upgrade.b64 ]; then
+            echo 'Bundle ainda não disponível; nada a aplicar.'
+            exit 0
+          fi
+          python - <<'PY'
+          import base64, io, tarfile
+          from pathlib import Path
+          raw = base64.b64decode(Path('scripts/decision_upgrade.b64').read_text().strip())
+          with tarfile.open(fileobj=io.BytesIO(raw), mode='r:gz') as tf:
+              tf.extractall('.')
+          Path('scripts/decision_upgrade.b64').unlink(missing_ok=True)
+          Path('.github/workflows/apply-decision-upgrade.yml').unlink(missing_ok=True)
+          PY
+          git config user.name 'RuanMarcos38'
+          git config user.email 'ruanessencia8@gmail.com'
+          git add -A
+          git commit -m 'feat: decision intelligence v2 e layout do template [decision-upgrade-applied]'
+          git push origin HEAD:chatgpt/decision-intelligence-v2
