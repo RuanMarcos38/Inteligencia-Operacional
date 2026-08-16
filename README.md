@@ -19,6 +19,25 @@ Os dois documentos de produto foram unificados sem repetir módulos. O núcleo f
 
 O sistema **não tenta duplicar** CRM completo, discador, ERP, WFM completo ou speech analytics. Esses itens entram como fontes/conectores, conforme o próprio recorte do MVP.
 
+
+## Decision Intelligence V2
+
+A camada de gestão foi ampliada para transformar o painel em uma **central de decisão**, mantendo o mesmo shell visual do template original anexado: sidebar flutuante em liquid glass, navegação compactável, fundo escuro com profundidade, cards arredondados e navegação mobile.
+
+Novos recursos:
+
+- Scorecards executivos com meta, forecast, tendência, confiança e freshness
+- Fila de prioridades ordenada por severidade, impacto, confiança e urgência
+- Briefing executivo automático com sinais positivos, riscos e decisões sugeridas
+- Análise de drivers para explicar o que mais contribui para a variação do resultado
+- Mapa de risco operacional por equipe com probabilidade, impacto e exposição
+- Índice de confiança do dado: atualização, completude, consistência e duplicidade
+- Copiloto de Gestão com perguntas em linguagem natural e respostas explicáveis
+- Camada semântica de métricas, regras de alerta, checks de qualidade, briefs e views salvas no backend
+- Ciclo fechado: dado → contexto → decisão → ação → resultado → aprendizado
+
+A proposta continua sendo uma camada de inteligência sobre CRM, ERP, telefonia, WhatsApp e demais fontes, sem reconstruir essas ferramentas dentro do SaaS.
+
 ## Stack
 
 - React 19 + TypeScript + Vite 7
@@ -27,7 +46,6 @@ O sistema **não tenta duplicar** CRM completo, discador, ERP, WFM completo ou s
 - Supabase Auth + PostgreSQL + RLS
 - Backend versionado em `supabase/migrations/`
 - GitHub Actions para build
-- Docker + Nginx para deploy fora do Lovable
 
 Não existe dependência de `@lovable.dev/*`.
 
@@ -68,28 +86,15 @@ A importação consolida `external_id` repetido antes do `upsert` e a base possu
 
 ## Backend
 
-As migrations incluem entidades, RLS multiempresa e funções para:
+O migration inclui entidades, RLS e funções para:
 
 - `executive_kpis`
 - `revenue_trend`
 - `team_performance`
 - `run_intelligence_rules`
 
-O motor de inteligência começa com regras transparentes e auditáveis e pode evoluir para modelos estatísticos/IA sem substituir a explicabilidade.
+O motor de inteligência começa com regras transparentes e auditáveis, conforme o escopo do MVP, e pode evoluir para modelos estatísticos/IA sem substituir a explicabilidade.
 
 ## Deploy fora do Lovable
 
-Build estático:
-
-```bash
-npm install
-npm run build
-```
-
-Docker/EasyPanel:
-
-```bash
-docker compose up -d --build
-```
-
-A aplicação fica exposta em `http://servidor:8080` no compose padrão. Em produção, configure as variáveis `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` e `VITE_DEMO_MODE=false` antes do build.
+O frontend gera arquivos estáticos com `npm run build`. Pode ser publicado em Hostinger, Cloudflare Pages, Vercel, Netlify ou servido por Nginx/EasyPanel. O backend fica no Supabase/Postgres.
