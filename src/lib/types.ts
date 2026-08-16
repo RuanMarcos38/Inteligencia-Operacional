@@ -35,3 +35,62 @@ export interface Opportunity { id: string; company: string; owner: string; team:
 export interface CostItem { id: string; category: string; amount: number; type: 'fixed'|'variable'; period: string }
 export interface DataSource { id: string; name: string; type: string; status: string; lastSync: string; records: number }
 export interface Scenario { id: string; name: string; headcountDelta: number; capacityDelta: number; whatsappShare: number; hoursDelta: number; projectedCost: number; projectedRevenue: number; projectedRoi: number }
+
+export type HealthStatus = 'healthy' | 'attention' | 'risk'
+export interface MetricScorecard {
+  id: string
+  label: string
+  value: string
+  target: string
+  forecast?: string
+  delta: number
+  status: HealthStatus
+  confidence: number
+  freshness: string
+}
+export interface DecisionPriority {
+  id: string
+  severity: Severity
+  title: string
+  whyNow: string
+  impactLabel: string
+  impactValue: number
+  confidence: number
+  owner: string
+  dueLabel: string
+  action: string
+}
+export interface DriverItem { label: string; impact: number; direction: 'positive'|'negative'; context: string }
+export interface RiskItem { id: string; name: string; probability: number; impact: number; exposure: number; category: string; owner: string }
+export interface DataTrust {
+  score: number
+  freshness: number
+  completeness: number
+  consistency: number
+  duplicates: number
+  onlineSources: number
+  totalSources: number
+}
+export interface ExecutiveBrief {
+  headline: string
+  summary: string
+  generatedAt: string
+  positive: string[]
+  risks: string[]
+  decisions: string[]
+}
+export interface DecisionCockpit {
+  scorecards: MetricScorecard[]
+  priorities: DecisionPriority[]
+  drivers: DriverItem[]
+  risks: RiskItem[]
+  trust: DataTrust
+  brief: ExecutiveBrief
+}
+export interface CopilotAnswer {
+  answer: string
+  evidence: string[]
+  recommendations: string[]
+  confidence: number
+  generatedAt: string
+}
