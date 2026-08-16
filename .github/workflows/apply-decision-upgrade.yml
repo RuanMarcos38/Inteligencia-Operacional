@@ -16,16 +16,18 @@ jobs:
       - name: Aplicar bundle quando disponível
         shell: bash
         run: |
-          if [ ! -f scripts/decision_upgrade.b64 ]; then
-            echo 'Bundle ainda não disponível; nada a aplicar.'
-            exit 0
-          fi
+          for f in scripts/decision_upgrade.part1 scripts/decision_upgrade.part2 scripts/decision_upgrade.part3 scripts/decision_upgrade.part4 scripts/decision_upgrade.part5; do
+            test -f "$f" || { echo "Aguardando todos os fragmentos"; exit 0; }
+          done
+          cat scripts/decision_upgrade.part1 scripts/decision_upgrade.part2 scripts/decision_upgrade.part3 scripts/decision_upgrade.part4 scripts/decision_upgrade.part5 > /tmp/decision_upgrade.b64
           python - <<'PY'
           import base64, io, tarfile
           from pathlib import Path
-          raw = base64.b64decode(Path('scripts/decision_upgrade.b64').read_text().strip())
+          raw = base64.b64decode(Path('/tmp/decision_upgrade.b64').read_text().strip(), validate=True)
           with tarfile.open(fileobj=io.BytesIO(raw), mode='r:gz') as tf:
               tf.extractall('.')
+          for path in Path('scripts').glob('decision_upgrade.part*'):
+              path.unlink(missing_ok=True)
           Path('scripts/decision_upgrade.b64').unlink(missing_ok=True)
           Path('.github/workflows/apply-decision-upgrade.yml').unlink(missing_ok=True)
           PY
