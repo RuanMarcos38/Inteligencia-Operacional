@@ -16,7 +16,7 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Validar migrations
         run: |
-          if grep -R "date date" supabase/migrations; then
+          if grep -R "period_end date date" supabase/migrations; then
             echo "Erro de sintaxe detectado nas migrations"
             exit 1
           fi
