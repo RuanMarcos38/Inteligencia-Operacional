@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+    branches: [main, 'chatgpt/**']
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Instalar dependências
+        run: npm install --no-audit --no-fund
+      - name: Validar migrations
+        run: |
+          if grep -R "period_end date date" supabase/migrations; then
+            echo "Erro de sintaxe detectado nas migrations"
+            exit 1
+          fi
+      - name: Build de produção
+        run: npm run build
+      - name: Publicar artefato do frontend
+        uses: actions/upload-artifact@v4
+        with:
+          name: inteligencia-operacional-dist
+          path: dist
+          if-no-files-found: error

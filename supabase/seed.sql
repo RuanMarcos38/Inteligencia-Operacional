@@ -1,0 +1,2 @@
+-- Execute após criar um usuário pelo Auth. O seed é opcional e deve receber o organization_id real.
+-- A aplicação já abre em VITE_DEMO_MODE=true sem depender deste arquivo.
